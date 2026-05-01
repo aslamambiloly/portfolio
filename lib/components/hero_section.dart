@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lottie/lottie.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../theme/app_theme.dart';
-import 'dart:math';
 
 class HeroSection extends StatefulWidget {
   const HeroSection({super.key});
@@ -23,35 +20,38 @@ class _HeroSectionState extends State<HeroSection> {
         alignment: Alignment.center,
         children: [
           Positioned.fill(
-            child: Opacity(
-              opacity: 0.2,
-              child: Lottie.asset('assets/lotties/bg.json', fit: BoxFit.cover),
+            child: RepaintBoundary(
+              child: ColorFiltered(
+                colorFilter: ColorFilter.matrix([
+                  1,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  1,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  1,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0.2,
+                  0,
+                ]),
+                child: Lottie.asset(
+                  'assets/lotties/bg.json',
+                  fit: BoxFit.cover,
+                  frameRate: FrameRate.composition,
+                ),
+              ),
             ),
           ),
-
-          // Image.asset('assets/images/bg.png'),
-          // Background Gradient (Glow Pulse effect from CSS)
-          Positioned.fill(
-            child:
-                Container(
-                      decoration: const BoxDecoration(
-                        gradient: RadialGradient(
-                          colors: [
-                            Color(0x1A0C87F2), // Primary/10
-                            Color(0x00000000), // Transparent
-                          ],
-                          radius: 1.0,
-                        ),
-                      ),
-                    )
-                    .animate(
-                      onPlay: (controller) => controller.repeat(reverse: true),
-                    )
-                    .fade(duration: 4.seconds),
-          ),
-
-          // Bubbles
-          // ..._bubbles.map((bubble) => _buildBubble(bubble)),
 
           // Main Content
           Padding(
@@ -92,21 +92,18 @@ class _HeroSectionState extends State<HeroSection> {
                           ),
                         ],
                       ),
-                    )
-                    .animate()
-                    .fadeIn(duration: 1.seconds)
-                    .slideY(begin: 0.2, end: 0),
-                const Text(
+                ),
+
+                Text(
                       "the Flutter Developer you need right now",
                       style: TextStyle(
-                        fontSize: 24,
+                    fontSize: 32,
                         color: AppTheme.mutedForeground,
+                    fontFamily: FontOptions.ubuntuRegular.name,
                       ),
                       textAlign: TextAlign.center,
-                    )
-                    .animate()
-                    .fadeIn(delay: 500.ms, duration: 800.ms)
-                    .slideY(begin: 0.2, end: 0),
+                ),
+                
                 const SizedBox(height: 48),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -120,15 +117,21 @@ class _HeroSectionState extends State<HeroSection> {
                           vertical: 20,
                         ),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(50),
                         ),
                       ),
                       onPressed: () {
                         // Scroll to projects - handled in parent via GlobalKeys optimally or passed callback
                       },
-                      child: const Row(
+                      child: Row(
                         children: [
-                          Text('View Projects', style: TextStyle(fontSize: 16)),
+                          Text(
+                            'View Projects',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontFamily: FontOptions.ubuntuRegular.name,
+                            ),
+                          ),
                           SizedBox(width: 8),
                           Icon(LucideIcons.arrowDown, size: 16),
                         ],
@@ -144,7 +147,7 @@ class _HeroSectionState extends State<HeroSection> {
                           vertical: 20,
                         ),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(50),
                         ),
                       ),
                       onPressed: () {
@@ -156,7 +159,7 @@ class _HeroSectionState extends State<HeroSection> {
                       ),
                     ),
                   ],
-                ).animate().fadeIn(delay: 1.seconds, duration: 800.ms),
+                ),
               ],
             ),
           ),
@@ -166,49 +169,3 @@ class _HeroSectionState extends State<HeroSection> {
   }
 }
 
-//   Widget _buildBubble(_BubbleConfig bubble) {
-//     // Generate some random deterministic position
-//     final random = Random(bubble.id.hashCode);
-//     final top = random.nextDouble() * 500 + 100;
-//     final left = random.nextDouble() * 800 + 100;
-
-//     return Positioned(
-//       top: top,
-//       left: left,
-//       child:
-//           Container(
-//                 width: bubble.size,
-//                 height: bubble.size,
-//                 padding: const EdgeInsets.all(8),
-//                 decoration: BoxDecoration(
-//                   shape: BoxShape.circle,
-//                   border: Border.all(
-//                     color: AppTheme.primary.withValues(alpha: 0.3),
-//                     width: 2,
-//                   ),
-//                 ),
-//                 child: SvgPicture.asset(
-//                   bubble.assetPath,
-//                   fit: BoxFit.contain,
-//                   placeholderBuilder: (context) =>
-//                       const Icon(Icons.code, color: AppTheme.primary),
-//                 ),
-//               )
-//               .animate(onPlay: (controller) => controller.repeat(reverse: true))
-//               .moveY(
-//                 begin: -10,
-//                 end: 10,
-//                 duration: (random.nextInt(2000) + 2000).ms,
-//                 curve: Curves.easeInOut,
-//               ),
-//     );
-//   }
-// }
-
-// class _BubbleConfig {
-//   final String id;
-//   final double size;
-//   final String assetPath;
-
-//   _BubbleConfig(this.id, this.size, this.assetPath);
-// }
