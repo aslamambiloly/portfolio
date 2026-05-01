@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -10,7 +11,36 @@ class HeroSection extends StatefulWidget {
   State<HeroSection> createState() => _HeroSectionState();
 }
 
-class _HeroSectionState extends State<HeroSection> {
+class _HeroSectionState extends State<HeroSection>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _lottieController;
+  Timer? _idleTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    _lottieController = AnimationController(vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _idleTimer?.cancel();
+    _lottieController.dispose();
+    super.dispose();
+  }
+
+  void _onCursorMove() {
+    // Resume animation when cursor moves
+    if (!_lottieController.isAnimating) {
+      _lottieController.repeat();
+    }
+    // Reset the idle timer — pause after 1.5s of no cursor movement
+    _idleTimer?.cancel();
+    _idleTimer = Timer(const Duration(milliseconds: 1500), () {
+      if (mounted) _lottieController.stop();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -20,34 +50,26 @@ class _HeroSectionState extends State<HeroSection> {
         alignment: Alignment.center,
         children: [
           Positioned.fill(
-            child: RepaintBoundary(
-              child: ColorFiltered(
-                colorFilter: ColorFilter.matrix([
-                  1,
-                  0,
-                  0,
-                  0,
-                  0,
-                  0,
-                  1,
-                  0,
-                  0,
-                  0,
-                  0,
-                  0,
-                  1,
-                  0,
-                  0,
-                  0,
-                  0,
-                  0,
-                  0.2,
-                  0,
-                ]),
-                child: Lottie.asset(
-                  'assets/lotties/bg.json',
-                  fit: BoxFit.cover,
-                  frameRate: FrameRate.composition,
+            child: MouseRegion(
+              onHover: (_) => _onCursorMove(),
+              child: RepaintBoundary(
+                child: ColorFiltered(
+                  colorFilter: ColorFilter.matrix([
+                    1, 0, 0, 0, 0,
+                    0, 1, 0, 0, 0,
+                    0, 0, 1, 0, 0,
+                    0, 0, 0, 0.2, 0,
+                  ]),
+                  child: Lottie.asset(
+                    'assets/lotties/bg.json',
+                    fit: BoxFit.cover,
+                    frameRate: FrameRate.composition,
+                    controller: _lottieController,
+                    onLoaded: (composition) {
+                      // Bind duration from the JSON; start paused
+                      _lottieController.duration = composition.duration;
+                    },
+                  ),
                 ),
               ),
             ),
@@ -60,50 +82,50 @@ class _HeroSectionState extends State<HeroSection> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text.rich(
-                      textAlign: TextAlign.center,
+                  textAlign: TextAlign.center,
+                  TextSpan(
+                    children: [
                       TextSpan(
-                        children: [
-                          TextSpan(
-                            text: "hello, ",
-                            style: TextStyle(
-                              fontSize: 70,
-                              fontFamily: FontOptions.ubuntuLightItalic.name,
-                              letterSpacing: 0,
-                              color: Colors.white,
-                            ),
-                          ),
-                          TextSpan(
-                            text: "I'm ",
-                            style: TextStyle(
-                              fontSize: 70,
-                              fontFamily: FontOptions.ubuntuLight.name,
-                              letterSpacing: 0,
-                              color: Colors.white,
-                            ),
-                          ),
-                          TextSpan(
-                            text: "Mohammed Aslam",
-                            style: TextStyle(
-                              fontSize: 70,
-                              fontFamily: 'ubuntuBold',
-                              letterSpacing: 0,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
+                        text: "hello, ",
+                        style: TextStyle(
+                          fontSize: 70,
+                          fontFamily: FontOptions.ubuntuLightItalic.name,
+                          letterSpacing: 0,
+                          color: Colors.white,
+                        ),
                       ),
+                      TextSpan(
+                        text: "I'm ",
+                        style: TextStyle(
+                          fontSize: 70,
+                          fontFamily: FontOptions.ubuntuLight.name,
+                          letterSpacing: 0,
+                          color: Colors.white,
+                        ),
+                      ),
+                      TextSpan(
+                        text: "Mohammed Aslam",
+                        style: TextStyle(
+                          fontSize: 70,
+                          fontFamily: 'ubuntuBold',
+                          letterSpacing: 0,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
 
                 Text(
-                      "the Flutter Developer you need right now",
-                      style: TextStyle(
+                  "the Flutter Developer you need right now",
+                  style: TextStyle(
                     fontSize: 32,
-                        color: AppTheme.mutedForeground,
+                    color: AppTheme.mutedForeground,
                     fontFamily: FontOptions.ubuntuRegular.name,
-                      ),
-                      textAlign: TextAlign.center,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-                
+
                 const SizedBox(height: 48),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -121,7 +143,7 @@ class _HeroSectionState extends State<HeroSection> {
                         ),
                       ),
                       onPressed: () {
-                        // Scroll to projects - handled in parent via GlobalKeys optimally or passed callback
+                        // Scroll to projects
                       },
                       child: Row(
                         children: [
@@ -132,8 +154,8 @@ class _HeroSectionState extends State<HeroSection> {
                               fontFamily: FontOptions.ubuntuRegular.name,
                             ),
                           ),
-                          SizedBox(width: 8),
-                          Icon(LucideIcons.arrowDown, size: 16),
+                          const SizedBox(width: 8),
+                          const Icon(LucideIcons.arrowDown, size: 16),
                         ],
                       ),
                     ),
@@ -168,4 +190,3 @@ class _HeroSectionState extends State<HeroSection> {
     );
   }
 }
-
