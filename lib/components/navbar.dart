@@ -50,7 +50,7 @@ class _NavBarState extends State<NavBar> {
             Expanded(
               child: Row(
                 children: [
-                  // Image.asset('assets/images/aslam.png', height: 30, width: 30),
+                  Image.asset('assets/images/aslam.png', height: 30, width: 30),
                   const SizedBox(width: 16),
                   InkWell(
                     onTap: () => widget.onNavigate('home'),

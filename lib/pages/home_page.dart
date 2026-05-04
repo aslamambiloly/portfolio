@@ -16,6 +16,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  bool animate = false;
   final ScrollController _scrollController = ScrollController();
 
   final Map<String, GlobalKey> _sectionKeys = {
@@ -64,7 +65,11 @@ class _HomePageState extends State<HomePage> {
                     minHeight: MediaQuery.of(context).size.height,
                     maxHeight: MediaQuery.of(context).size.height,
                   ),
-                  child: const HeroSection(),
+                  child: HeroSection(
+                    animate: (a) => setState(() {
+                      animate = a;
+                    }),
+                  ),
                 ),
                 Container(
                   key: _sectionKeys['about'],
@@ -90,9 +95,14 @@ class _HomePageState extends State<HomePage> {
             top: 0,
             left: 0,
             right: 0,
-            child: NavBar(
-              scrollController: _scrollController,
-              onNavigate: _scrollToSection,
+            child: AnimatedOpacity(
+              opacity: animate ? 1.0 : 0.0,
+              duration: const Duration(milliseconds: 1000),
+              curve: Curves.fastOutSlowIn,
+              child: NavBar(
+                scrollController: _scrollController,
+                onNavigate: _scrollToSection,
+              ),
             ),
           ),
         ],
