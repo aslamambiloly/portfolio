@@ -1,24 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
-  static const Color background = Color(0xFF000000);
-  static const Color foreground = Color(0xFFF1F1F3);
-  static const Color primary = Color(0xFF0C87F2);
-  static const Color secondary = Color(0xFF9857F2);
-  static const Color accent = Color(0xFFD94EB4);
-  static const Color card = Color(0xFF16161D);
-  static const Color cardHover = Color(0xFF1B1B25);
-  static const Color border = Color(0xFF292931);
-  static const Color muted = Color(0xFF292931);
-  static const Color mutedForeground = Color(0xFFAFAFB3);
+  static const Color background = Color(0xFF0A0A09);
+  static const Color foreground = Color(0xFFF5F0E8);
+  static const Color primary = Color(0xFFD4AF37); // Classic gold
+  static const Color secondary = Color(0xFFFFD700); // Bright/shiny gold
+  static const Color accent = Color(0xFFE8A12C); // Warm amber gold
+  static const Color card = Color(0xFF141210);
+  static const Color cardHover = Color(0xFF1E1B14);
+  static const Color border = Color(0xFF2D2518);
+  static const Color muted = Color(0xFF1E1B14);
+  static const Color mutedForeground = Color(0xFF9B9080);
 
   static const LinearGradient primaryGradient = LinearGradient(
     colors: [
-      Color(0xFF0C87F2),
-      Color(0xFF9857F2),
-      Color(0xFFB052D9),
-      Color(0xFFD94EB4),
+      Color(0xFFFFD700), // Bright gold
+      Color(0xFFD4AF37), // Classic gold
+      Color(0xFFB8860B), // Dark goldenrod
+      Color(0xFF8B6914), // Deep gold
     ],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,

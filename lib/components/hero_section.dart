@@ -1,7 +1,5 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../theme/app_theme.dart';
 
 class HeroSection extends StatefulWidget {
@@ -11,36 +9,18 @@ class HeroSection extends StatefulWidget {
   State<HeroSection> createState() => _HeroSectionState();
 }
 
-class _HeroSectionState extends State<HeroSection>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _lottieController;
-  Timer? _idleTimer;
+class _HeroSectionState extends State<HeroSection> {
+  bool animate = false;
 
   @override
   void initState() {
     super.initState();
-    _lottieController = AnimationController(vsync: this);
-  }
-
-  @override
-  void dispose() {
-    _idleTimer?.cancel();
-    _lottieController.dispose();
-    super.dispose();
-  }
-
-  void _onCursorMove() {
-    // Resume animation when cursor moves
-    if (!_lottieController.isAnimating) {
-      _lottieController.repeat();
-    }
-    // Reset the idle timer — pause after 1.5s of no cursor movement
-    _idleTimer?.cancel();
-    _idleTimer = Timer(const Duration(milliseconds: 1500), () {
-      if (mounted) _lottieController.stop();
+    Future.delayed(const Duration(seconds: 3), () {
+      setState(() {
+        animate = true;
+      });
     });
   }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -49,27 +29,20 @@ class _HeroSectionState extends State<HeroSection>
       child: Stack(
         alignment: Alignment.center,
         children: [
+         
           Positioned.fill(
-            child: MouseRegion(
-              onHover: (_) => _onCursorMove(),
-              child: RepaintBoundary(
-                child: ColorFiltered(
-                  colorFilter: ColorFilter.matrix([
-                    1, 0, 0, 0, 0,
-                    0, 1, 0, 0, 0,
-                    0, 0, 1, 0, 0,
-                    0, 0, 0, 0.2, 0,
-                  ]),
-                  child: Lottie.asset(
-                    'assets/lotties/bg.json',
-                    fit: BoxFit.cover,
-                    frameRate: FrameRate.composition,
-                    controller: _lottieController,
-                    onLoaded: (composition) {
-                      // Bind duration from the JSON; start paused
-                      _lottieController.duration = composition.duration;
-                    },
-                  ),
+            child: Opacity(
+              opacity: 0.2,
+              child: Image.asset('assets/images/bg.gif', fit: BoxFit.cover),
+            ),
+          ),
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: RadialGradient(
+                  colors: [Colors.transparent, AppTheme.background],
+                  center: Alignment.center,
+                  radius: 0.5,
                 ),
               ),
             ),
@@ -83,24 +56,16 @@ class _HeroSectionState extends State<HeroSection>
               children: [
                 Text.rich(
                   textAlign: TextAlign.center,
+                  strutStyle: StrutStyle(height: 2, forceStrutHeight: true),
                   TextSpan(
                     children: [
-                      TextSpan(
-                        text: "hello, ",
-                        style: TextStyle(
-                          fontSize: 70,
-                          fontFamily: FontOptions.ubuntuLightItalic.name,
-                          letterSpacing: 0,
-                          color: Colors.white,
-                        ),
-                      ),
                       TextSpan(
                         text: "I'm ",
                         style: TextStyle(
                           fontSize: 70,
                           fontFamily: FontOptions.ubuntuLight.name,
                           letterSpacing: 0,
-                          color: Colors.white,
+                          color: Colors.white70,
                         ),
                       ),
                       TextSpan(
@@ -116,70 +81,186 @@ class _HeroSectionState extends State<HeroSection>
                   ),
                 ),
 
-                Text(
-                  "the Flutter Developer you need right now",
-                  style: TextStyle(
-                    fontSize: 32,
-                    color: AppTheme.mutedForeground,
-                    fontFamily: FontOptions.ubuntuRegular.name,
-                  ),
+                Text.rich(
                   textAlign: TextAlign.center,
+                  TextSpan(
+                    children: [
+                      WidgetSpan(
+                        alignment: PlaceholderAlignment.middle,
+                        child: AnimatedSize(
+                          duration: const Duration(milliseconds: 1200),
+                          curve: Curves.fastOutSlowIn,
+                          alignment: Alignment.centerRight,
+                          child: SizedBox(
+                            width: animate ? null : 0,
+                            child: AnimatedOpacity(
+                              duration: const Duration(milliseconds: 1000),
+                              opacity: animate ? 1.0 : 0.0,
+                              child: Text(
+                                "the ",
+                                style: TextStyle(
+                                  fontSize: 40,
+                                  color: Colors.white70,
+                                  fontFamily: FontOptions.ubuntuLight.name,
+                                ),
+                                maxLines: 1,
+                                softWrap: false,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      WidgetSpan(
+                        alignment: PlaceholderAlignment.middle,
+                        child: ShaderMask(
+                          shaderCallback: (bounds) =>
+                              AppTheme.primaryGradient.createShader(bounds),
+                          child: Text(
+                            "Flutter Developer",
+                            style: TextStyle(
+                              fontSize: 40,
+                              fontFamily: FontOptions.ubuntuMedium.name,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                      WidgetSpan(
+                        alignment: PlaceholderAlignment.middle,
+                        child: AnimatedSize(
+                          duration: const Duration(milliseconds: 1200),
+                          curve: Curves.fastOutSlowIn,
+                          alignment: Alignment.centerLeft,
+                          child: SizedBox(
+                            width: animate ? null : 0,
+                            child: AnimatedOpacity(
+                              duration: const Duration(milliseconds: 1000),
+                              opacity: animate ? 1.0 : 0.0,
+                              child: Text(
+                                " you need right now.",
+                                style: TextStyle(
+                                  fontSize: 40,
+                                  color: Colors.white70,
+                                  fontFamily:
+                                      FontOptions.ubuntuLightItalic.name,
+                                ),
+                                maxLines: 1,
+                                softWrap: false,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-
+                
                 const SizedBox(height: 48),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: Colors.black,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 32,
-                          vertical: 20,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(50),
-                        ),
+                    Material(
+                      color: Colors.transparent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50),
                       ),
-                      onPressed: () {
-                        // Scroll to projects
-                      },
-                      child: Row(
-                        children: [
-                          Text(
-                            'View Projects',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontFamily: FontOptions.ubuntuRegular.name,
+                      child: InkWell(
+                        onTap: () {},
+                        borderRadius: BorderRadius.circular(50),
+                        child: Padding(
+                          padding: const EdgeInsets.all(2.0),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 26,
+                              vertical: 14,
+                            ),
+                            decoration: BoxDecoration(
+                              gradient: AppTheme.primaryGradient,
+                              borderRadius: BorderRadius.circular(50),
+                            ),
+                            child: Row(
+                              children: [
+                                Text.rich(
+                                  TextSpan(
+                                    children: [
+                                      // TextSpan(
+                                      //   text: 'View '.toUpperCase(),
+                                      //   style: TextStyle(
+                                      //     fontSize: 16,
+                                      //     fontFamily:
+                                      //         FontOptions.ubuntuRegular.name,
+                                      //     color: Colors.black,
+                                      //   ),
+                                      // ),
+                                      TextSpan(
+                                        text: 'Projects'.toUpperCase(),
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontFamily:
+                                              FontOptions.ubuntuBold.name,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          const SizedBox(width: 8),
-                          const Icon(LucideIcons.arrowDown, size: 16),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        side: const BorderSide(color: Colors.white),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 32,
-                          vertical: 20,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(50),
                         ),
                       ),
-                      onPressed: () {
-                        // Scroll to contact
-                      },
-                      child: const Text(
-                        'Get in Touch',
-                        style: TextStyle(fontSize: 16),
+                    ),
+                    const SizedBox(width: 10),
+                    Material(
+                      color: Colors.transparent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50),
+                      ),
+                      child: InkWell(
+                        onTap: () {},
+                        borderRadius: BorderRadius.circular(50),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 26,
+                            vertical: 14,
+                          ),
+                          decoration: BoxDecoration(
+                            // gradient: AppTheme.primaryGradient,
+                            color: Colors.transparent,
+                            borderRadius: BorderRadius.circular(50),
+                            border: Border.all(color: AppTheme.primary),
+                          ),
+                          child: Row(
+                            children: [
+                              Text.rich(
+                                TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: 'Contact'.toUpperCase(),
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontFamily: FontOptions.ubuntuBold.name,
+                                        color: AppTheme.primary,
+                                      ),
+                                    ),
+                                    // TextSpan(
+                                    //   text: ' Me'.toUpperCase(),
+                                    //   style: TextStyle(
+                                    //     fontSize: 16,
+                                    //     fontFamily:
+                                    //         FontOptions.ubuntuRegular.name,
+                                    //     color: AppTheme.primary,
+                                    //   ),
+                                    // ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
+                    
                   ],
                 ),
               ],
@@ -190,3 +271,4 @@ class _HeroSectionState extends State<HeroSection>
     );
   }
 }
+

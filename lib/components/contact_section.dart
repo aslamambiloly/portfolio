@@ -87,7 +87,7 @@ class ContactSection extends StatelessWidget {
                       const SizedBox(height: 24),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
+                          backgroundColor: AppTheme.primary,
                           foregroundColor: Colors.black,
                           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 20),
                           shape: RoundedRectangleBorder(
