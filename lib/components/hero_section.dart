@@ -20,7 +20,7 @@ class _HeroSectionState extends State<HeroSection> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      Future.delayed(const Duration(milliseconds: 100), () {
+      Future.delayed(const Duration(milliseconds: 500), () {
         setState(() {
           animate4 = true;
         });
@@ -53,15 +53,12 @@ class _HeroSectionState extends State<HeroSection> {
         alignment: Alignment.center,
         children: [
          
-          AnimatedOpacity(
-            opacity: animate4 ? 1.0 : 0.0,
-            duration: const Duration(milliseconds: 1000),
-            curve: Curves.fastOutSlowIn,
-            child: Positioned.fill(
-              child: Opacity(
-                opacity: 0.2,
-                child: Image.asset('assets/images/bg.gif', fit: BoxFit.cover),
-              ),
+          Positioned.fill(
+            child: AnimatedOpacity(
+              opacity: animate4 ? 0.2 : 0.0,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.fastOutSlowIn,
+              child: Image.asset('assets/images/bg.gif', fit: BoxFit.cover),
             ),
           ),
           Positioned.fill(
