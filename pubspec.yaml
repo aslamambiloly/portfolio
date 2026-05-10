@@ -41,6 +41,8 @@ dependencies:
   flutter_svg: ^2.2.4
   lottie: ^3.3.3
   curved_navigation_bar_pro: ^1.0.1
+  cached_network_image: ^3.4.1
+  shimmer: ^3.0.0
   
 
 dev_dependencies:
@@ -68,6 +70,7 @@ flutter:
   assets:
     - assets/images/
     - assets/lotties/
+    - assets/
 
   fonts:
     - family: ubuntuBold

@@ -1,4 +1,3 @@
-import 'package:curved_navigation_bar_pro/curved_navigation_bar_pro.dart';
 import 'package:flutter/material.dart';
 import '../components/navbar.dart';
 import '../components/hero_section.dart';
@@ -18,6 +17,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   bool animate = false;
   final ScrollController _scrollController = ScrollController();
+  String _activeSection = 'home';
 
   final Map<String, GlobalKey> _sectionKeys = {
     'home': GlobalKey(),
@@ -26,6 +26,39 @@ class _HomePageState extends State<HomePage> {
     'skills': GlobalKey(),
     'contact': GlobalKey(),
   };
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  void _onScroll() {
+    String currentSection = 'home';
+    for (var entry in _sectionKeys.entries) {
+      final key = entry.value;
+      if (key.currentContext != null) {
+        final renderBox = key.currentContext!.findRenderObject() as RenderBox?;
+        if (renderBox != null) {
+          final position = renderBox.localToGlobal(Offset.zero);
+          final double top = position.dy;
+          final double bottom = top + renderBox.size.height;
+          // Use a fixed value for screenHeight or calculate it. We'll use 500 as an approximate mid-point if context is an issue, but we can safely assume it's visible if top is above half screen and bottom is below half screen.
+          // Since we can't reliably use MediaQuery in a scroll listener without context, we check if top is <= 300 and bottom > 300.
+          if (top <= 300 && bottom > 300) {
+            currentSection = entry.key;
+            break;
+          }
+        }
+      }
+    }
+
+    if (_activeSection != currentSection) {
+      setState(() {
+        _activeSection = currentSection;
+      });
+    }
+  }
 
   void _scrollToSection(String sectionId) {
     final key = _sectionKeys[sectionId];
@@ -46,6 +79,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void dispose() {
+    _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     super.dispose();
   }
@@ -66,6 +100,9 @@ class _HomePageState extends State<HomePage> {
                     maxHeight: MediaQuery.of(context).size.height,
                   ),
                   child: HeroSection(
+                    onNavigate: (s) {
+                      _scrollToSection(s);
+                    },
                     animate: (a) => setState(() {
                       animate = a;
                     }),
@@ -102,6 +139,7 @@ class _HomePageState extends State<HomePage> {
               child: NavBar(
                 scrollController: _scrollController,
                 onNavigate: _scrollToSection,
+                activeSection: _activeSection,
               ),
             ),
           ),

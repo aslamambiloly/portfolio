@@ -1,9 +1,17 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:shimmer/shimmer.dart';
 import '../theme/app_theme.dart';
 
 class HeroSection extends StatefulWidget {
   final ValueChanged<bool> animate;
-  const HeroSection({super.key, required this.animate});
+  final Function(String) onNavigate;
+
+  const HeroSection({
+    super.key,
+    required this.animate,
+    required this.onNavigate,
+  });
 
   @override
   State<HeroSection> createState() => _HeroSectionState();
@@ -26,17 +34,17 @@ class _HeroSectionState extends State<HeroSection> {
         });
       });
     });
-    Future.delayed(const Duration(seconds: 3), () {
+    Future.delayed(const Duration(seconds: 4), () {
       setState(() {
         animate = true;
       });
     });
-    Future.delayed(const Duration(seconds: 5), () {
+    Future.delayed(const Duration(seconds: 6), () {
       setState(() {
         animate2 = true;
       });
     });
-    Future.delayed(const Duration(seconds: 6), () {
+    Future.delayed(const Duration(seconds: 7), () {
       setState(() {
         animate3 = true;
       });
@@ -55,10 +63,26 @@ class _HeroSectionState extends State<HeroSection> {
          
           Positioned.fill(
             child: AnimatedOpacity(
-              opacity: animate4 ? 0.2 : 0.0,
+              opacity: animate ? 0.2 : 0.0,
               duration: const Duration(milliseconds: 300),
               curve: Curves.fastOutSlowIn,
-              child: Image.asset('assets/images/bg.gif', fit: BoxFit.cover),
+              child: CachedNetworkImage(
+                imageUrl:
+                    'https://pub-c1acaa53c8cc4a6d9b3875e2119af81c.r2.dev/bg2.gif',
+                fit: BoxFit.cover,
+                placeholder: (context, url) => SizedBox(
+                  width: double.infinity,
+                  height: double.infinity,
+                  child: Shimmer.fromColors(
+                    baseColor: AppTheme.background,
+                    highlightColor: Colors.black87,
+                    child: Container(color: AppTheme.background),
+                  ),
+                ),
+                errorWidget: (context, url, error) =>
+                    Image.asset('assets/images/bg.gif', fit: BoxFit.cover),
+              ),
+           
             ),
           ),
           Positioned.fill(
@@ -154,7 +178,23 @@ class _HeroSectionState extends State<HeroSection> {
                       ],
                     ),
                   ),
-
+                  if (!animate)
+                    Opacity(
+                      opacity: 0.5,
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 5.0),
+                        child: SizedBox(
+                          width: 10,
+                          height: 10,
+                          child: LinearProgressIndicator(
+                            color: Colors.white70,
+                            backgroundColor: Colors.white,
+                          
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ),
+                    ),
                   Text.rich(
                     textAlign: TextAlign.center,
                     TextSpan(
@@ -247,7 +287,7 @@ class _HeroSectionState extends State<HeroSection> {
                             borderRadius: BorderRadius.circular(50),
                           ),
                           child: InkWell(
-                            onTap: () {},
+                            onTap: () => widget.onNavigate('projects'),
                             borderRadius: BorderRadius.circular(50),
                             child: Padding(
                               padding: const EdgeInsets.all(2.0),
@@ -265,15 +305,7 @@ class _HeroSectionState extends State<HeroSection> {
                                     Text.rich(
                                       TextSpan(
                                         children: [
-                                          // TextSpan(
-                                          //   text: 'View '.toUpperCase(),
-                                          //   style: TextStyle(
-                                          //     fontSize: 16,
-                                          //     fontFamily:
-                                          //         FontOptions.ubuntuRegular.name,
-                                          //     color: Colors.black,
-                                          //   ),
-                                          // ),
+
                                           TextSpan(
                                             text: 'Projects'.toUpperCase(),
                                             style: TextStyle(
@@ -299,7 +331,7 @@ class _HeroSectionState extends State<HeroSection> {
                             borderRadius: BorderRadius.circular(50),
                           ),
                           child: InkWell(
-                            onTap: () {},
+                            onTap: () => widget.onNavigate('contact'),
                             borderRadius: BorderRadius.circular(50),
                             child: Container(
                               padding: const EdgeInsets.symmetric(
@@ -326,15 +358,7 @@ class _HeroSectionState extends State<HeroSection> {
                                             color: AppTheme.primary,
                                           ),
                                         ),
-                                        // TextSpan(
-                                        //   text: ' Me'.toUpperCase(),
-                                        //   style: TextStyle(
-                                        //     fontSize: 16,
-                                        //     fontFamily:
-                                        //         FontOptions.ubuntuRegular.name,
-                                        //     color: AppTheme.primary,
-                                        //   ),
-                                        // ),
+                                       
                                       ],
                                     ),
                                   ),

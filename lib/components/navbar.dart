@@ -2,13 +2,20 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../theme/app_theme.dart';
 
 class NavBar extends StatefulWidget {
   final ScrollController scrollController;
   final Function(String) onNavigate;
+  final String activeSection;
 
-  const NavBar({super.key, required this.scrollController, required this.onNavigate});
+  const NavBar({
+    super.key,
+    required this.scrollController,
+    required this.onNavigate,
+    this.activeSection = 'home',
+  });
 
   @override
   State<NavBar> createState() => _NavBarState();
@@ -49,20 +56,47 @@ class _NavBarState extends State<NavBar> {
           children: [
             Expanded(
               child: Row(
+                spacing: 10,
                 children: [
-                  Image.asset('assets/images/aslam.png', height: 30, width: 30),
-                  const SizedBox(width: 16),
+                  // Image.asset('assets/images/aslam.png', height: 30, width: 30),
                   InkWell(
                     onTap: () => widget.onNavigate('home'),
-                    child: AnimatedDefaultTextStyle(
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontFamily: FontOptions.ubuntuMedium.name,
-                        color: Colors.white,
-                      ),
+
+                    child: AnimatedCrossFade(
+                      crossFadeState: _isScrolled
+                          ? CrossFadeState.showFirst
+                          : CrossFadeState.showSecond,
                       duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOut,
-                      child: Text(_isScrolled ? 'Mohammed Aslam' : 'Portfolio'),
+                      firstChild: Text.rich(
+                        TextSpan(
+                          children: [
+                            TextSpan(
+                              text: 'Mohammed ',
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontFamily: FontOptions.ubuntuMedium.name,
+                                color: Colors.white70,
+                              ),
+                            ),
+                            TextSpan(
+                              text: 'Aslam',
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontFamily: FontOptions.ubuntuMedium.name,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      secondChild: Text(
+                        'Portfolio',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontFamily: FontOptions.ubuntuMedium.name,
+                          color: Colors.white70,
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -75,26 +109,41 @@ class _NavBarState extends State<NavBar> {
                   children: [
                     _NavItem(
                       title: 'Home',
+                      isActive: widget.activeSection == 'home',
                       onTap: () => widget.onNavigate('home'),
                     ),
                     _NavItem(
                       title: 'About',
+                      isActive: widget.activeSection == 'about',
                       onTap: () => widget.onNavigate('about'),
                     ),
                     _NavItem(
                       title: 'Projects',
+                      isActive: widget.activeSection == 'projects',
                       onTap: () => widget.onNavigate('projects'),
                     ),
                     _NavItem(
                       title: 'Skills',
+                      isActive: widget.activeSection == 'skills',
                       onTap: () => widget.onNavigate('skills'),
                     ),
                     _NavItem(
                       title: 'Contact',
+                      isActive: widget.activeSection == 'contact',
                       onTap: () => widget.onNavigate('contact'),
                     ),
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () async {
+                        final Uri url = Uri.parse(
+                          'assets/resume.pdf',
+                        ); // Update this path or URL as needed
+                        if (!await launchUrl(
+                          url,
+                          mode: LaunchMode.externalApplication,
+                        )) {
+                          debugPrint('Could not launch $url');
+                        }
+                      },
                       child: Row(
                         spacing: 5,
                         children: [
@@ -151,25 +200,52 @@ class _NavBarState extends State<NavBar> {
   );
 }
 
-
-class _NavItem extends StatelessWidget {
+class _NavItem extends StatefulWidget {
   final String title;
   final VoidCallback onTap;
+  final bool isActive;
 
-  const _NavItem({required this.title, required this.onTap});
+  const _NavItem({
+    required this.title,
+    required this.onTap,
+    this.isActive = false,
+  });
 
   @override
+  State<_NavItem> createState() => __NavItemState();
+}
+
+class __NavItemState extends State<_NavItem> {
+  bool _isSelected = false;
+  @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16),
+    return Material(
+      color: Colors.transparent,
+      borderRadius: .circular(25),
       child: InkWell(
-        onTap: onTap,
-        child: Text(
-          title,
-          style: TextStyle(
-            color: AppTheme.mutedForeground,
-            fontSize: 16,
-            fontFamily: FontOptions.ubuntuRegular.name,
+        splashColor: Colors.transparent,
+        onTap: widget.onTap,
+        borderRadius: .circular(25),
+
+        onHover: (value) {
+          setState(() {
+            _isSelected = value;
+          });
+        },
+
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
+          child: AnimatedDefaultTextStyle(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.fastOutSlowIn,
+            style: TextStyle(
+              color: _isSelected || widget.isActive
+                  ? AppTheme.foreground
+                  : Colors.white70,
+              fontSize: 16,
+              fontFamily: FontOptions.ubuntuRegular.name,
+            ),
+            child: Text(widget.title),
           ),
         ),
       ),
